@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Farmer Friend 🌱</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f9f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      width: 420px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+
+    h2 {
+      text-align: center;
+      color: #48a730;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 15px;
+      padding: 11px;
+      background: #349634;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background: #000000;
+    }
+
+    /* 🔥 LINE-BY-LINE OUTPUT FIX */
+    #resultBox {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e8f5e9;
+      border-radius: 6px;
+      display: none;
+      white-space: pre-wrap; /* IMPORTANT */
+      color: #000000;
+      font-size: 14.5px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h2>🌾 Farmer Friend</h2>
+
+    <label for="farmerId">Enter Farmer ID</label>
+    <input type="text" id="farmerId" placeholder="e.g. 100">
+
+    <button onclick="getSuggestion()">Get Suggestion</button>
+
+    <div id="resultBox"></div>
+  </div>
+
+  <script>
+    async function getSuggestion() {
+      const farmerId = document.getElementById("farmerId").value.trim();
+      const resultBox = document.getElementById("resultBox");
+
+      if (!farmerId) {
+        alert("Please enter Farmer ID");
+        return;
+      }
+
+      resultBox.style.display = "block";
+      resultBox.innerText = "⏳ Getting suggestion...";
+
+      try {
+        const response = await fetch("http://localhost:5678/webhook-test/farmer-suggestion", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            farmer_id: farmerId
+          })
+        });
+
+        // ✅ PARSE JSON (NOT TEXT)
+        const data = await response.json();
+
+        // ✅ EXTRACT ONLY THE OUTPUT FIELD
+        const outputText = data[0].output;
+
+        // ✅ DISPLAY CLEAN LINE-BY-LINE RESULT
+        resultBox.innerText = outputText;
+
+      } catch (error) {
+        resultBox.innerText = "❌ Error getting suggestion. Please try again.";
+      }
+    }
+  </script>
+
+</body>
+</html>
